@@ -32,6 +32,18 @@ jobs:
 
     steps:
       # These stage versions are pinned by https://github.com/renovatebot/renovate
+            - name: Free Disk Space
+        run: |
+          echo "Borrando cosas de Ubuntu que no usamos..."
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/local/lib/android
+          sudo docker image prune --all --force
+          sudo rm -rf /usr/share/swift
+          sudo apt-get clean
+          df -h
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
