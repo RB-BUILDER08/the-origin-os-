@@ -1,27 +1,43 @@
 #!/bin/bash
-
 set -ouex pipefail
 
-# Copy the contents of system_files/ of the git repo to /
-cp -avf "/ctx/system_files"/. /
+# Copia system_files a la raiz
+if [ -d "/ctx/system_files" ]; then
+  cp -avf "/ctx/system_files"/. /
+elif [ -d "/system_files" ]; then
+  cp -avf "/system_files"/. /
+fi
 
-### Install packages
-
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
-
-# this installs a package from fedora repos
+### Paquetes extra (opcional)
 dnf5 install -y tmux
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
-
-#### Example for enabling a System Unit File
-
+### Servicios
 systemctl enable podman.socket
+
+### --- THE ORIGIN - OPCION B 100% CONSOLA + VIDEO ---
+echo "Configurando THE ORIGIN Opcion B..."
+
+# Crea carpeta de video de inicio
+mkdir -p /etc/skel/.steam/root/config/uioverrides/movies
+
+# Busca tu video (lo tienes que poner en build_files/deck_startup.mkv)
+if [ -f "/ctx/deck_startup.mkv" ]; then
+  echo "Encontrado deck_startup.mkv"
+  cp /ctx/deck_startup.mkv /etc/skel/.steam/root/config/uioverrides/movies/deck_startup.webm
+elif [ -f "/ctx/deck_startup.webm" ]; then
+  echo "Encontrado deck_startup.webm"
+  cp /ctx/deck_startup.webm /etc/skel/.steam/root/config/uioverrides/movies/deck_startup.webm
+else
+  echo "No hay video custom, se usara el de Bazzite"
+fi
+
+chmod -R 755 /etc/skel/.steam 2>/dev/null || true
+
+# Opcion B - borra sesiones de escritorio para que arranque 100% en Game Mode
+rm -rf /usr/share/wayland-sessions/gnome* /usr/share/wayland-sessions/plasma* /usr/share/xsessions/* 2>/dev/null || true
+
+# Asegura que Steam Deck sea por defecto (Bazzite Deck ya lo trae, pero por si acaso)
+mkdir -p /etc/sddm.conf.d
+echo -e "[Autologin]\nUser=gamer\nSession=gamescope-wayland.desktop" > /etc/sddm.conf.d/the-origin.conf || true
+
+echo "THE ORIGIN listo"
