@@ -18,7 +18,7 @@ on:
       - './.github/workflows/build-disk.yml'
 
 env:
-  IMAGE_NAME: "the-origin-os-" 
+  IMAGE_NAME: "the-origin-os-"
   IMAGE_REGISTRY: "ghcr.io/rb-builder08"
   DEFAULT_TAG: "latest"
   BIB_IMAGE: "quay.io/centos-bootc/bootc-image-builder:latest"
@@ -68,7 +68,7 @@ jobs:
 
       - name: Build disk images
         id: build
-        uses: osbuild/bootc-image-builder-action@v0.2.1
+        uses: osbuild/bootc-image-builder-action@v0.0.2
         with:
           builder-image: ${{ env.BIB_IMAGE }}
           config-file: ${{ matrix.disk-type == 'anaconda-iso' && './disk_config/iso.toml' || './disk_config/disk.toml' }}
