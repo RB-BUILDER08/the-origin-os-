@@ -1,0 +1,12 @@
+[Unit]
+Description=The Origin OS Startup Video
+Before=sddm.service
+After=plymouth-quit.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mpv --fullscreen --fs-screen=all --no-audio --no-input-default-bindings --no-osc --no-osd-bar /usr/share/the-origin-os/deck_startup.mkv
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
